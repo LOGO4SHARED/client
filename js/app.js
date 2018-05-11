@@ -4,19 +4,11 @@ new Vue ({
         files: [],
         login : false,
         register:false,
-        name:'',
+        name: localStorage.getItem('name'),
         username: '',
         password:'',
-        allLogo: [
-            { image: 'https://placehold.it/150x80?text=1',liked:false},
-            { image: 'https://placehold.it/150x80?text=2', liked: false},
-            { image: 'https://placehold.it/150x80?text=3', liked: false},
-            { image: 'https://placehold.it/150x80?text=4', liked: false},
-            { image: 'https://placehold.it/150x80?text=5', liked: false},
-            { image: 'https://placehold.it/150x80?text=6', liked: false},
-            { image: 'https://placehold.it/150x80?text=7', liked: false},
-            { image: 'https://placehold.it/150x80?text=8', liked: false},
-        ]
+        local: localStorage.getItem('token') || '',
+        allLogo: null,
     },
     methods:{
         isLike(img){
@@ -30,16 +22,17 @@ new Vue ({
             }
         },
         signIn(){
-            axios.post('http://localhost:3000/users', {
+            axios.post('http://localhost:3000/signin', {
                 email: this.username,
                 password: this.password
             })
             .then(response => {
                 if (response.data.token) {
                     localStorage.setItem('token', response.data.token)
+                    localStorage.setItem('name', response.data.name)
                 }
                 this.login = true
-                console.log(response)
+                window.location.reload()
             })
             .catch(err => {
                 console.log(err)
@@ -50,7 +43,7 @@ new Vue ({
         },
         regist(){
             this.register=false
-            axios.post('http://localhost:3000/users',{
+            axios.post('http://localhost:3000/signup',{
                 name:this.name,
                 email:this.username,
                 password:this.password
@@ -58,8 +51,10 @@ new Vue ({
             .then(response=>{
                 if(response.data.token){
                     localStorage.setItem('token',response.data.token)
+                    localStorage.setItem('name', response.data.name)
                 }
                 this.login=true
+                window.location.reload()
             })
             .catch(err=>{
                 console.log(err)
@@ -69,7 +64,7 @@ new Vue ({
             for(let i=0;i<files.length;i++){
                 let formData = new FormData();
                 formData.append('image', files[i]);
-                axios.post('http://localhost:3000/upload',
+                axios.post('http://localhost:3000/image/upload',
                     formData, {
                         'Content-Type': 'multipart/form-data',
                     }
@@ -84,6 +79,27 @@ new Vue ({
         },
         handleFileUpload() {
             this.files = this.$refs.files.files
+        },
+        keluar(){
+            this.local = ''
+            this.name = ''
+            localStorage.removeItem('token')
+            localStorage.removeItem('name')
+            window.location.reload()
+        },
+        getImages(){
+            axios.get('http://localhost:3000/image/all')
+            .then(response=>{
+                this.allLogo = response.data.listImages
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+        }
+    },
+    mounted(){
+        if(this.local!=''){
+            this.allLogo
         }
     }
 })
