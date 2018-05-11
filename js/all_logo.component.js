@@ -1,5 +1,5 @@
 let allTag = `<div class="col-sm-3 md-2" style="margin-bottom: 1%;">
-                    <img :src="link.image" class="img-responsive" style="width:100%" alt="Image">
+                    <img :src="link.link" class="img-responsive" style="width:100%" alt="Image">
                        <a :href="'http://www.facebook.com/sharer.php?u='+link.image">
                             <img src="./assets/facebook.png" class='img-responsive'  style='width:35px;height:33px;float:left' >
                         </a>
